@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "841137183761",
+    "project_id": "alu-startup-hub",
+    "storage_bucket": "alu-startup-hub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841137183761:android:ded470f5803f3cee3fa5b0",
+        "android_client_info": {
+          "package_name": "com.alu.alu_startup_hub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu7ULKKXV717RN0UCKR2IArDKBF4Gdf0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
