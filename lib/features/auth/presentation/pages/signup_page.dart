@@ -30,7 +30,16 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign up')),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          // Once sign-up succeeds and AuthBloc reports an authenticated
+          // user, this screen's job is done — pop back to AuthGate (the
+          // root route) so it can rebuild and show the authenticated app,
+          // instead of leaving this signup form stuck on top of it.
+          if (state.isAuthenticated) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(24),
