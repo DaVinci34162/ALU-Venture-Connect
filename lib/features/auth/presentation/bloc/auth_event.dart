@@ -51,3 +51,11 @@ class SignUpRequested extends AuthEvent {
 class SignOutRequested extends AuthEvent {
   const SignOutRequested();
 }
+
+class AuthErrorOccurred extends AuthEvent {
+  final String message;
+  const AuthErrorOccurred(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

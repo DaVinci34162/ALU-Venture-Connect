@@ -18,6 +18,12 @@ import '../../features/opportunities/domain/usecases/create_opportunity.dart';
 import '../../features/opportunities/domain/usecases/update_opportunity.dart';
 import '../../features/opportunities/domain/usecases/watch_open_opportunities.dart';
 import '../../features/opportunities/presentation/bloc/opportunity_bloc.dart';
+import '../../features/startup_profile/data/datasources/startup_firestore_datasource.dart';
+import '../../features/startup_profile/data/repositories/startup_repository_impl.dart';
+import '../../features/startup_profile/domain/repositories/startup_repository.dart';
+import '../../features/startup_profile/domain/usecases/create_startup.dart';
+import '../../features/startup_profile/domain/usecases/watch_my_startup.dart';
+import '../../features/startup_profile/presentation/bloc/startup_bloc.dart';
 
 final sl = GetIt.instance; // "service locator" — conventional name for the get_it singleton
 
@@ -50,6 +56,22 @@ Future<void> initDependencies() async {
       signUp: sl(),
       signOut: sl(),
     ),
+  );
+
+  // ---- startup_profile feature ----
+  sl.registerLazySingleton<StartupFirestoreDataSource>(
+    () => StartupFirestoreDataSource(sl()),
+  );
+
+  sl.registerLazySingleton<StartupRepository>(
+    () => StartupRepositoryImpl(sl()),
+  );
+
+  sl.registerLazySingleton(() => WatchMyStartup(sl()));
+  sl.registerLazySingleton(() => CreateStartup(sl()));
+
+  sl.registerFactory(
+    () => StartupBloc(watchMyStartup: sl(), createStartup: sl()),
   );
 
   // ---- opportunities feature ----

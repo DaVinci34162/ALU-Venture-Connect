@@ -26,12 +26,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
+    on<AuthErrorOccurred>(_onAuthError);
   }
 
   void _onWatchStarted(AuthStateWatchStarted event, Emitter<AuthState> emit) {
     _authSubscription?.cancel();
     _authSubscription = watchAuthState().listen(
-          (user) => add(AuthStateChanged(user)),
+      (user) => add(AuthStateChanged(user)),
+      onError: (error) => add(AuthErrorOccurred(error.toString())),
     );
   }
 
@@ -41,6 +43,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(state.copyWith(user: event.user, isLoading: false));
     }
+  }
+
+  void _onAuthError(AuthErrorOccurred event, Emitter<AuthState> emit) {
+    emit(state.copyWith(isLoading: false, error: event.message));
   }
 
   Future<void> _onSignInRequested(SignInRequested event, Emitter<AuthState> emit) async {
