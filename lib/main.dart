@@ -27,19 +27,17 @@ class AluStartupHubApp extends StatelessWidget {
       create: (_) => sl<AuthBloc>()..add(const AuthStateWatchStarted()),
       child: MaterialApp(
         title: 'ALU Startup Hub',
-        theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.deepPurple),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true, 
+          colorSchemeSeed: Colors.deepPurple,
+        ),
         home: const AuthGate(),
       ),
     );
   }
 }
 
-/// Listens to AuthBloc and routes between the logged-out and logged-in
-/// parts of the app. This single widget is the "gate" mentioned in our
-/// security rules design — but note it's a UX convenience, not a security
-/// boundary. The real enforcement is Firestore's security rules; this
-/// widget just decides what to *show*, since a user could otherwise
-/// technically bypass UI navigation. Worth saying explicitly in your demo.
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
@@ -47,9 +45,35 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
+        // If we are loading, show a spinner and the error if one occurred.
         if (state.isLoading) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 24),
+                  const Text('Connecting...'),
+                  if (state.error != null)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        'Error: ${state.error}',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  TextButton(
+                    onPressed: () => context.read<AuthBloc>().add(const SignOutRequested()),
+                    child: const Text('Sign Out / Reset'),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
+
         if (state.isAuthenticated) {
           return const OpportunityFeedPage();
         }

@@ -9,7 +9,7 @@ class AuthState extends Equatable {
 
   const AuthState({
     this.user,
-    this.isLoading = true, // true until the first auth-state emission arrives
+    this.isLoading = true,
     this.isSubmitting = false,
     this.error,
   });
@@ -22,12 +22,13 @@ class AuthState extends Equatable {
     bool? isLoading,
     bool? isSubmitting,
     String? error,
+    bool clearError = false,
   }) {
     return AuthState(
       user: clearUser ? null : (user ?? this.user),
       isLoading: isLoading ?? this.isLoading,
       isSubmitting: isSubmitting ?? this.isSubmitting,
-      error: error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/sign_in.dart';
 import '../../domain/usecases/sign_out.dart';
@@ -30,40 +31,54 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onWatchStarted(AuthStateWatchStarted event, Emitter<AuthState> emit) {
+    debugPrint('AuthBloc: Watching auth state...');
     _authSubscription?.cancel();
     _authSubscription = watchAuthState().listen(
-      (user) => add(AuthStateChanged(user)),
-      onError: (error) => add(AuthErrorOccurred(error.toString())),
+      (user) {
+        debugPrint('AuthBloc: Auth state changed. User: ${user?.email}');
+        add(AuthStateChanged(user));
+      },
+      onError: (error) {
+        debugPrint('AuthBloc: Stream error: $error');
+        add(AuthErrorOccurred(error.toString()));
+      },
     );
   }
 
   void _onAuthStateChanged(AuthStateChanged event, Emitter<AuthState> emit) {
+    debugPrint('AuthBloc: _onAuthStateChanged ENTERED. user=${event.user}');
     if (event.user == null) {
-      emit(state.copyWith(clearUser: true, isLoading: false));
+      emit(state.copyWith(clearUser: true, isLoading: false, isSubmitting: false));
     } else {
-      emit(state.copyWith(user: event.user, isLoading: false));
+      emit(state.copyWith(user: event.user, isLoading: false, isSubmitting: false, clearError: true));
     }
+    debugPrint('AuthBloc: _onAuthStateChanged EXITED. new isLoading=${state.isLoading}');
   }
 
   void _onAuthError(AuthErrorOccurred event, Emitter<AuthState> emit) {
-    emit(state.copyWith(isLoading: false, error: event.message));
+    emit(state.copyWith(isLoading: false, isSubmitting: false, error: event.message));
   }
 
   Future<void> _onSignInRequested(SignInRequested event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(isSubmitting: true, error: null));
+    debugPrint('AuthBloc: SignIn requested for ${event.email}');
+    emit(state.copyWith(isSubmitting: true, clearError: true));
     try {
       await signIn(email: event.email, password: event.password);
-      // No need to manually set state.user here — the authStateChanges()
-      // stream we're already subscribed to will fire AuthStateChanged
-      // automatically once Firebase confirms the sign-in.
-      emit(state.copyWith(isSubmitting: false));
+      debugPrint('AuthBloc: SignIn use case completed');
+      // If after 3 seconds we still haven't switched pages (no AuthStateChanged),
+      // we clear the spinner so the user can try again or see errors.
+      await Future.delayed(const Duration(seconds: 3));
+      if (state.isSubmitting) {
+        emit(state.copyWith(isSubmitting: false));
+      }
     } catch (e) {
+      debugPrint('AuthBloc: SignIn use case failed: $e');
       emit(state.copyWith(isSubmitting: false, error: e.toString()));
     }
   }
 
   Future<void> _onSignUpRequested(SignUpRequested event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(isSubmitting: true, error: null));
+    emit(state.copyWith(isSubmitting: true, clearError: true));
     try {
       await signUp(
         email: event.email,
@@ -71,7 +86,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: event.name,
         role: event.role,
       );
-      emit(state.copyWith(isSubmitting: false));
     } catch (e) {
       emit(state.copyWith(isSubmitting: false, error: e.toString()));
     }
