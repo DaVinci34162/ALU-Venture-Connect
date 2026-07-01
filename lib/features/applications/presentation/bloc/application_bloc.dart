@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/apply_to_opportunity.dart';
@@ -10,8 +9,6 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
   final ApplyToOpportunity applyToOpportunity;
   final WatchMyApplications watchMyApplications;
 
-  StreamSubscription? _applicationSubscription;
-
   ApplicationBloc({
     required this.applyToOpportunity,
     required this.watchMyApplications,
@@ -21,18 +18,19 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
     on<ApplicationErrorOccurred>(_onError);
   }
 
-  void _onWatchStarted(
-      WatchMyApplicationsStarted event, Emitter<ApplicationState> emit) {
+  Future<void> _onWatchStarted(
+      WatchMyApplicationsStarted event, Emitter<ApplicationState> emit) async {
     emit(state.copyWith(isLoading: true));
-    _applicationSubscription?.cancel();
-    _applicationSubscription = watchMyApplications(event.studentId).listen(
-          (applications) {
-        emit(state.copyWith(
-          applications: applications,
-          isLoading: false,
-        ));
-      },
-      onError: (error) => add(ApplicationErrorOccurred(error.toString())),
+    await emit.forEach(
+      watchMyApplications(event.studentId),
+      onData: (applications) => state.copyWith(
+        applications: applications,
+        isLoading: false,
+      ),
+      onError: (error, _) => state.copyWith(
+        isLoading: false,
+        error: error.toString(),
+      ),
     );
   }
 
@@ -51,11 +49,5 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
   void _onError(
       ApplicationErrorOccurred event, Emitter<ApplicationState> emit) {
     emit(state.copyWith(isLoading: false, error: event.message));
-  }
-
-  @override
-  Future<void> close() {
-    _applicationSubscription?.cancel();
-    return super.close();
   }
 }
