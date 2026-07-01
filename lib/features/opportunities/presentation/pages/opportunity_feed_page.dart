@@ -5,6 +5,7 @@ import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../startup_profile/presentation/pages/startup_profile_page.dart';
+import 'create_opportunity_page.dart';
 import '../bloc/opportunity_bloc.dart';
 import '../bloc/opportunity_event.dart';
 import '../bloc/opportunity_state.dart';
@@ -110,8 +111,8 @@ class OpportunityFeedPage extends StatelessWidget {
             
             return FloatingActionButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Create Opportunity flow coming soon')),
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const CreateOpportunityPage()),
                 );
               },
               child: const Icon(Icons.add),
