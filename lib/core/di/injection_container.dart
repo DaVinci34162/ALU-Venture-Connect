@@ -24,12 +24,15 @@ import '../../features/startup_profile/domain/repositories/startup_repository.da
 import '../../features/startup_profile/domain/usecases/create_startup.dart';
 import '../../features/startup_profile/domain/usecases/watch_my_startup.dart';
 import '../../features/startup_profile/presentation/bloc/startup_bloc.dart';
+import '../../features/applications/data/datasources/application_firestore_datasource.dart';
+import '../../features/applications/data/repositories/application_repository_impl.dart';
+import '../../features/applications/domain/repositories/application_repository.dart';
+import '../../features/applications/domain/usecases/apply_to_opportunity.dart';
+import '../../features/applications/domain/usecases/watch_my_applications.dart';
+import '../../features/applications/presentation/bloc/application_bloc.dart';
 
-final sl = GetIt.instance; // "service locator" — conventional name for the get_it singleton
+final sl = GetIt.instance;
 
-/// Called once at app startup, before runApp(). Registers every dependency
-/// from the bottom of the dependency graph up: external packages first,
-/// then data sources, then repositories, then use cases, then BLoCs.
 Future<void> initDependencies() async {
   // ---- external ----
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
@@ -37,11 +40,11 @@ Future<void> initDependencies() async {
 
   // ---- auth feature ----
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSource(sl(), sl()),
+        () => AuthRemoteDataSource(sl(), sl()),
   );
 
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(sl()),
+        () => AuthRepositoryImpl(sl()),
   );
 
   sl.registerLazySingleton(() => WatchAuthState(sl()));
@@ -50,7 +53,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => SignOut(sl()));
 
   sl.registerLazySingleton(
-    () => AuthBloc(
+        () => AuthBloc(
       watchAuthState: sl(),
       signIn: sl(),
       signUp: sl(),
@@ -60,18 +63,18 @@ Future<void> initDependencies() async {
 
   // ---- startup_profile feature ----
   sl.registerLazySingleton<StartupFirestoreDataSource>(
-    () => StartupFirestoreDataSource(sl()),
+        () => StartupFirestoreDataSource(sl()),
   );
 
   sl.registerLazySingleton<StartupRepository>(
-    () => StartupRepositoryImpl(sl()),
+        () => StartupRepositoryImpl(sl()),
   );
 
   sl.registerLazySingleton(() => WatchMyStartup(sl()));
   sl.registerLazySingleton(() => CreateStartup(sl()));
 
   sl.registerFactory(
-    () => StartupBloc(watchMyStartup: sl(), createStartup: sl()),
+        () => StartupBloc(watchMyStartup: sl(), createStartup: sl()),
   );
 
   // ---- opportunities feature ----
@@ -88,14 +91,30 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => UpdateOpportunity(sl()));
   sl.registerLazySingleton(() => CloseOpportunity(sl()));
 
-  // BLoCs are registered as a factory, not a singleton — every time a
-  // screen requests one, it gets a fresh instance with its own
-  // subscriptions and lifecycle, rather than reusing a stale one.
   sl.registerFactory(
         () => OpportunityBloc(
       watchOpenOpportunities: sl(),
       createOpportunity: sl(),
       closeOpportunity: sl(),
+    ),
+  );
+
+  // ---- applications feature ----
+  sl.registerLazySingleton<ApplicationFirestoreDatasource>(
+        () => ApplicationFirestoreDatasource(sl()),
+  );
+
+  sl.registerLazySingleton<ApplicationRepository>(
+        () => ApplicationRepositoryImpl(sl()),
+  );
+
+  sl.registerLazySingleton(() => ApplyToOpportunity(sl()));
+  sl.registerLazySingleton(() => WatchMyApplications(sl()));
+
+  sl.registerFactory(
+        () => ApplicationBloc(
+      applyToOpportunity: sl(),
+      watchMyApplications: sl(),
     ),
   );
 }

@@ -5,6 +5,8 @@ import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../startup_profile/presentation/pages/startup_profile_page.dart';
+import '../../../applications/presentation/pages/my_applications_page.dart';
+import '../../../applications/presentation/pages/opportunity_detail_page.dart';
 import 'create_opportunity_page.dart';
 import '../bloc/opportunity_bloc.dart';
 import '../bloc/opportunity_event.dart';
@@ -23,21 +25,37 @@ class OpportunityFeedPage extends StatelessWidget {
           actions: [
             Builder(
               builder: (context) {
-                final authState = context.watch<AuthBloc>().state;
-                if (authState.user?.role != UserRole.startupAdmin) {
-                  return const SizedBox.shrink();
+                final user = context.watch<AuthBloc>().state.user;
+
+                if (user?.role == UserRole.student) {
+                  return IconButton(
+                    icon: const Icon(Icons.assignment),
+                    tooltip: 'My Applications',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MyApplicationsPage(),
+                        ),
+                      );
+                    },
+                  );
                 }
-                return IconButton(
-                  icon: const Icon(Icons.business),
-                  tooltip: 'My Startup',
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const StartupProfilePage(),
-                      ),
-                    );
-                  },
-                );
+
+                if (user?.role == UserRole.startupAdmin) {
+                  return IconButton(
+                    icon: const Icon(Icons.business),
+                    tooltip: 'My Startup',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const StartupProfilePage(),
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                return const SizedBox.shrink();
               },
             ),
             IconButton(
@@ -80,7 +98,8 @@ class OpportunityFeedPage extends StatelessWidget {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          context.read<OpportunityBloc>().add(const WatchOpportunitiesStarted());
+                          context.read<OpportunityBloc>().add(
+                              const WatchOpportunitiesStarted());
                         },
                         child: const Text('Retry'),
                       ),
@@ -98,7 +117,18 @@ class OpportunityFeedPage extends StatelessWidget {
                 final opportunity = state.opportunities[index];
                 return ListTile(
                   title: Text(opportunity.title),
-                  subtitle: Text('${opportunity.startupName} · ${opportunity.roleType}'),
+                  subtitle: Text(
+                      '${opportunity.startupName} · ${opportunity.roleType}'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => OpportunityDetailPage(
+                          opportunity: opportunity,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             );
@@ -107,12 +137,15 @@ class OpportunityFeedPage extends StatelessWidget {
         floatingActionButton: Builder(
           builder: (context) {
             final user = context.watch<AuthBloc>().state.user;
-            if (user?.role != UserRole.startupAdmin) return const SizedBox.shrink();
-            
+            if (user?.role != UserRole.startupAdmin) {
+              return const SizedBox.shrink();
+            }
             return FloatingActionButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const CreateOpportunityPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const CreateOpportunityPage(),
+                  ),
                 );
               },
               child: const Icon(Icons.add),
