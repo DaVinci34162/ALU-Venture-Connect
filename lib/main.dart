@@ -3,11 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'firebase_options.dart';
 import 'core/di/injection_container.dart';
+import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
 import 'features/auth/presentation/pages/login_page.dart';
-import 'features/opportunities/presentation/pages/opportunity_feed_page.dart';
+import 'features/main/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +29,7 @@ class AluStartupHubApp extends StatelessWidget {
       child: MaterialApp(
         title: 'ALU Startup Hub',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true, 
-          colorSchemeSeed: Colors.deepPurple,
-        ),
+        theme: AppTheme.lightTheme,
         home: const AuthGate(),
       ),
     );
@@ -45,9 +43,9 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        // If we are loading, show a spinner and the error if one occurred.
         if (state.isLoading) {
           return Scaffold(
+            backgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +63,9 @@ class AuthGate extends StatelessWidget {
                       ),
                     ),
                   TextButton(
-                    onPressed: () => context.read<AuthBloc>().add(const SignOutRequested()),
+                    onPressed: () => context
+                        .read<AuthBloc>()
+                        .add(const SignOutRequested()),
                     child: const Text('Sign Out / Reset'),
                   ),
                 ],
@@ -75,7 +75,7 @@ class AuthGate extends StatelessWidget {
         }
 
         if (state.isAuthenticated) {
-          return const OpportunityFeedPage();
+          return const MainPage();
         }
         return const LoginPage();
       },
