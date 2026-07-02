@@ -7,6 +7,7 @@ import '../bloc/application_bloc.dart';
 import '../bloc/application_event.dart';
 import '../bloc/application_state.dart';
 import '../../domain/entities/application.dart';
+import '../../../messaging/presentation/pages/chat_page.dart';
 
 class MyApplicationsPage extends StatefulWidget {
   const MyApplicationsPage({super.key});
@@ -159,7 +160,17 @@ class _ApplicationList extends StatelessWidget {
       itemCount: applications.length,
       itemBuilder: (context, index) {
         final app = applications[index];
-        return _ApplicationCard(application: app);
+        return GestureDetector(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ChatPage(
+                application: app,
+                otherPartyName: app.startupName,
+              ),
+            ),
+          ),
+          child: _ApplicationCard(application: app),
+        );
       },
     );
   }
