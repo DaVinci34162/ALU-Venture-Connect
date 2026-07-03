@@ -17,6 +17,21 @@ class MessageFirestoreDatasource {
         snap.docs.map((doc) => MessageModel.fromDoc(doc)).toList());
   }
 
+  /// The single most recent message in a conversation, or null if the
+  /// conversation is empty. limit(1) keeps this cheap: Firestore sends
+  /// one document per conversation, not the whole thread.
+  Stream<Message?> watchLastMessage(String applicationId) {
+    return firestore
+        .collection('applications')
+        .doc(applicationId)
+        .collection('messages')
+        .orderBy('sentAt', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((snap) =>
+    snap.docs.isEmpty ? null : MessageModel.fromDoc(snap.docs.first));
+  }
+
   Future<void> sendMessage({
     required String applicationId,
     required Message message,

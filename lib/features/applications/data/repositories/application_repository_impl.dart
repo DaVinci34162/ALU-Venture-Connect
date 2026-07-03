@@ -13,4 +13,8 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   @override
   Stream<List<Application>> watchMyApplications(String studentId) =>
       datasource.watchMyApplications(studentId);
+
+  @override
+  Stream<List<Application>> watchApplicationsForStartup(String ownerUid) =>
+      datasource.watchApplicationsForStartup(ownerUid);
 }

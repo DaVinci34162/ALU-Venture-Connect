@@ -16,6 +16,16 @@ class WatchMyApplicationsStarted extends ApplicationEvent {
   List<Object?> get props => [studentId];
 }
 
+/// Startup-admin side: watch every application submitted to my startup,
+/// identified by the admin's own uid (denormalized on each application).
+class WatchStartupApplicationsStarted extends ApplicationEvent {
+  final String ownerUid;
+  const WatchStartupApplicationsStarted(this.ownerUid);
+
+  @override
+  List<Object?> get props => [ownerUid];
+}
+
 class ApplicationSubmitted extends ApplicationEvent {
   final Application application;
   const ApplicationSubmitted(this.application);

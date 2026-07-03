@@ -28,6 +28,7 @@ import '../../features/applications/data/datasources/application_firestore_datas
 import '../../features/applications/data/repositories/application_repository_impl.dart';
 import '../../features/applications/domain/repositories/application_repository.dart';
 import '../../features/applications/domain/usecases/apply_to_opportunity.dart';
+import '../../features/applications/domain/usecases/watch_applications_for_startup.dart';
 import '../../features/applications/domain/usecases/watch_my_applications.dart';
 import '../../features/applications/presentation/bloc/application_bloc.dart';
 import '../../features/messaging/data/datasources/message_firestore_datasource.dart';
@@ -36,6 +37,7 @@ import '../../features/messaging/domain/repositories/message_repository.dart';
 import '../../features/messaging/domain/usecases/send_message.dart';
 import '../../features/messaging/domain/usecases/watch_messages.dart';
 import '../../features/messaging/presentation/bloc/message_bloc.dart';
+import '../../features/messaging/domain/usecases/watch_last_message.dart';
 
 final sl = GetIt.instance;
 
@@ -116,28 +118,31 @@ Future<void> initDependencies() async {
 
   sl.registerLazySingleton(() => ApplyToOpportunity(sl()));
   sl.registerLazySingleton(() => WatchMyApplications(sl()));
+  sl.registerLazySingleton(() => WatchApplicationsForStartup(sl()));
 
   sl.registerFactory(
         () => ApplicationBloc(
       applyToOpportunity: sl(),
       watchMyApplications: sl(),
+      watchApplicationsForStartup: sl(),
     ),
   );
 
   // ---- messaging feature ----
   sl.registerLazySingleton<MessageFirestoreDatasource>(
-    () => MessageFirestoreDatasource(sl()),
+        () => MessageFirestoreDatasource(sl()),
   );
 
   sl.registerLazySingleton<MessageRepository>(
-    () => MessageRepositoryImpl(sl()),
+        () => MessageRepositoryImpl(sl()),
   );
 
   sl.registerLazySingleton(() => WatchMessages(sl()));
+  sl.registerLazySingleton(() => WatchLastMessage(sl()));
   sl.registerLazySingleton(() => SendMessage(sl()));
 
   sl.registerFactory(
-    () => MessageBloc(
+        () => MessageBloc(
       watchMessages: sl(),
       sendMessage: sl(),
     ),

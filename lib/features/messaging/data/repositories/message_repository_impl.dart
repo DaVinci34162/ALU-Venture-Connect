@@ -11,6 +11,10 @@ class MessageRepositoryImpl implements MessageRepository {
       datasource.watchMessages(applicationId);
 
   @override
+  Stream<Message?> watchLastMessage(String applicationId) =>
+      datasource.watchLastMessage(applicationId);
+
+  @override
   Future<void> sendMessage({
     required String applicationId,
     required Message message,

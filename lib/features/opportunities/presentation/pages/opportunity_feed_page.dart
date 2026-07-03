@@ -9,6 +9,7 @@ import 'create_opportunity_page.dart';
 import '../bloc/opportunity_bloc.dart';
 import '../bloc/opportunity_event.dart';
 import '../bloc/opportunity_state.dart';
+import '../../../messaging/presentation/pages/conversations_page.dart';
 
 class OpportunityFeedPage extends StatelessWidget {
   const OpportunityFeedPage({super.key});
@@ -79,29 +80,44 @@ class OpportunityFeedPage extends StatelessWidget {
                                   ],
                                 ),
                                 // Avatar
-                                Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white
-                                        .withValues(alpha: 0.2),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Colors.white, width: 2),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      (user?.name.isNotEmpty == true
-                                          ? user!.name[0]
-                                          : '?')
-                                          .toUpperCase(),
-                                      style: const TextStyle(
+                                // Chat icon + Avatar
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => const ConversationsPage(),
+                                        ),
+                                      ),
+                                      icon: const Icon(
+                                        Icons.chat_bubble_outline,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16,
+                                        size: 24,
+                                      ),
+                                      tooltip: 'Messages',
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Container(
+                                      width: 44,
+                                      height: 44,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.2),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.white, width: 2),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          (user?.name.isNotEmpty == true ? user!.name[0] : '?')
+                                              .toUpperCase(),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 16,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
