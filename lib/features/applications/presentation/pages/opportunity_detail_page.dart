@@ -19,6 +19,9 @@ class OpportunityDetailPage extends StatefulWidget {
 }
 
 class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
+  /// True only when the user has just applied in THIS session. Used for
+  /// instant UI feedback and the success snackbar. The lasting source of
+  /// truth is the applications stream (see `alreadyApplied` below).
   bool _applied = false;
 
   @override
@@ -27,7 +30,11 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
     final isStudent = authUser.role == UserRole.student;
 
     return BlocProvider(
-      create: (_) => sl<ApplicationBloc>(),
+      // GUARD (edit 1): start watching this student's applications so the
+      // page knows whether an application for this opportunity already
+      // exists in Firestore — the stream is the source of truth.
+      create: (_) => sl<ApplicationBloc>()
+        ..add(WatchMyApplicationsStarted(authUser.uid)),
       child: Builder(
         builder: (context) => Scaffold(
           backgroundColor: AppColors.background,
@@ -65,6 +72,13 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
               }
             },
             builder: (context, state) {
+              // GUARD (edit 2): applied just now in this session, OR the
+              // database already holds an application from this student
+              // for this opportunity.
+              final alreadyApplied = _applied ||
+                  state.applications.any(
+                          (a) => a.opportunityId == widget.opportunity.id);
+
               return CustomScrollView(
                 slivers: [
                   // ── Hero header ──
@@ -249,7 +263,9 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
 
                           // Apply section
                           if (isStudent) ...[
-                            if (_applied)
+                            // GUARD (edit 3): driven by the stream-derived
+                            // value, not just this session's local flag.
+                            if (alreadyApplied)
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(16),
