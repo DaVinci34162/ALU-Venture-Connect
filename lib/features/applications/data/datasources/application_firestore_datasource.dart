@@ -20,12 +20,20 @@ class ApplicationFirestoreDatasource {
     await firestore.collection('startups').doc(startupId).get();
     final startupOwnerUid = startupDoc.data()!['createdBy'] as String;
 
+    // Wrap the incoming application (which already carries the applicant's
+    // name, role, cover message, and link) so nothing collected on the
+    // form is lost. Status and timestamp are set server-side rather than
+    // trusting whatever the client sent.
     final model = ApplicationModel(
       id: '',
       opportunityId: application.opportunityId,
       opportunityTitle: application.opportunityTitle,
       startupName: application.startupName,
       studentId: application.studentId,
+      applicantName: application.applicantName,
+      applicantRole: application.applicantRole,
+      coverMessage: application.coverMessage,
+      portfolioLink: application.portfolioLink,
       status: ApplicationStatus.pending,
       submittedAt: DateTime.now(),
     );
@@ -44,12 +52,9 @@ class ApplicationFirestoreDatasource {
         .toList());
   }
 
-  /// All applications submitted to a given startup, newest first.
-  /// Same collection as watchMyApplications, filtered from the other
-  /// side: by who received the application instead of who sent it.
-  /// All applications submitted to the signed-in admin's startup,
-  /// newest first. Queries by the denormalized owner uid, which the
-  /// security rules can verify directly against the query.
+  /// All applications submitted to the signed-in admin's startup, newest
+  /// first. Queries by the denormalized owner uid, which the security
+  /// rules can verify directly against the query.
   Stream<List<Application>> watchApplicationsForStartup(String ownerUid) {
     return firestore
         .collection('applications')
@@ -60,5 +65,4 @@ class ApplicationFirestoreDatasource {
         .map((doc) => ApplicationModel.fromDoc(doc))
         .toList());
   }
-
 }

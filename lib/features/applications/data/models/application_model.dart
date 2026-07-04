@@ -8,6 +8,10 @@ class ApplicationModel extends Application {
     required super.opportunityTitle,
     required super.startupName,
     required super.studentId,
+    required super.applicantName,
+    required super.applicantRole,
+    required super.coverMessage,
+    required super.portfolioLink,
     required super.status,
     required super.submittedAt,
   });
@@ -20,6 +24,12 @@ class ApplicationModel extends Application {
       opportunityTitle: data['opportunityTitle'] as String? ?? '',
       startupName: data['startupName'] as String? ?? '',
       studentId: data['studentId'] as String,
+      // Fallbacks keep old documents (created before these fields existed)
+      // from crashing — they simply read as empty.
+      applicantName: data['applicantName'] as String? ?? '',
+      applicantRole: data['applicantRole'] as String? ?? '',
+      coverMessage: data['coverMessage'] as String? ?? '',
+      portfolioLink: data['portfolioLink'] as String? ?? '',
       status: ApplicationStatus.values.firstWhere(
             (e) => e.name == data['status'],
         orElse: () => ApplicationStatus.pending,
@@ -33,6 +43,10 @@ class ApplicationModel extends Application {
     'opportunityTitle': opportunityTitle,
     'startupName': startupName,
     'studentId': studentId,
+    'applicantName': applicantName,
+    'applicantRole': applicantRole,
+    'coverMessage': coverMessage,
+    'portfolioLink': portfolioLink,
     'status': status.name,
     'submittedAt': Timestamp.fromDate(submittedAt),
   };

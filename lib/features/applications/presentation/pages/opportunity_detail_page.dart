@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/di/injection_container.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../opportunities/domain/entities/opportunity.dart';
+import '../../../../core/di/injection_container.dart';
 import '../bloc/application_bloc.dart';
 import '../bloc/application_event.dart';
 import '../bloc/application_state.dart';
-import '../../domain/entities/application.dart';
+import 'apply_page.dart';
 
 class OpportunityDetailPage extends StatefulWidget {
   final Opportunity opportunity;
@@ -19,65 +19,24 @@ class OpportunityDetailPage extends StatefulWidget {
 }
 
 class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
-  /// True only when the user has just applied in THIS session. Used for
-  /// instant UI feedback and the success snackbar. The lasting source of
-  /// truth is the applications stream (see `alreadyApplied` below).
-  bool _applied = false;
-
   @override
   Widget build(BuildContext context) {
     final authUser = context.read<AuthBloc>().state.user!;
     final isStudent = authUser.role == UserRole.student;
 
     return BlocProvider(
-      // GUARD (edit 1): start watching this student's applications so the
-      // page knows whether an application for this opportunity already
-      // exists in Firestore — the stream is the source of truth.
+      // Watch this student's applications so the page knows whether an
+      // application for this opportunity already exists — the stream is
+      // the source of truth for the "already applied" state.
       create: (_) => sl<ApplicationBloc>()
         ..add(WatchMyApplicationsStarted(authUser.uid)),
       child: Builder(
         builder: (context) => Scaffold(
           backgroundColor: AppColors.background,
-          body: BlocConsumer<ApplicationBloc, ApplicationState>(
-            listener: (context, state) {
-              if (state.submitError != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.submitError!),
-                    backgroundColor: AppColors.error,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
-              }
-              if (!state.isSubmitting && state.submitError == null && _applied) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Row(
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text('Application submitted successfully!'),
-                      ],
-                    ),
-                    backgroundColor: AppColors.success,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
-              }
-            },
+          body: BlocBuilder<ApplicationBloc, ApplicationState>(
             builder: (context, state) {
-              // GUARD (edit 2): applied just now in this session, OR the
-              // database already holds an application from this student
-              // for this opportunity.
-              final alreadyApplied = _applied ||
-                  state.applications.any(
-                          (a) => a.opportunityId == widget.opportunity.id);
+              final alreadyApplied = state.applications.any(
+                      (a) => a.opportunityId == widget.opportunity.id);
 
               return CustomScrollView(
                 slivers: [
@@ -86,8 +45,7 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                     expandedHeight: 200,
                     pinned: true,
                     backgroundColor: AppColors.primary,
-                    iconTheme:
-                    const IconThemeData(color: Colors.white),
+                    iconTheme: const IconThemeData(color: Colors.white),
                     flexibleSpace: FlexibleSpaceBar(
                       background: Container(
                         decoration: const BoxDecoration(
@@ -98,11 +56,9 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                              20, 80, 20, 20),
+                          padding: const EdgeInsets.fromLTRB(20, 80, 20, 20),
                           child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               // Startup badge
@@ -110,10 +66,8 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.white
-                                      .withValues(alpha: 0.2),
-                                  borderRadius:
-                                  BorderRadius.circular(20),
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   widget.opportunity.startupName,
@@ -137,8 +91,7 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                               Text(
                                 widget.opportunity.roleType,
                                 style: TextStyle(
-                                  color: Colors.white
-                                      .withValues(alpha: 0.85),
+                                  color: Colors.white.withValues(alpha: 0.85),
                                   fontSize: 14,
                                 ),
                               ),
@@ -163,10 +116,8 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                               runSpacing: 8,
                               children: widget.opportunity.tags
                                   .map((tag) => Container(
-                                padding:
-                                const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: AppColors.primary
                                       .withValues(alpha: 0.1),
@@ -199,8 +150,8 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                             decoration: BoxDecoration(
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                  color: const Color(0xFFE5E7EB)),
+                              border:
+                              Border.all(color: const Color(0xFFE5E7EB)),
                             ),
                             child: Text(
                               widget.opportunity.description.isEmpty
@@ -222,37 +173,31 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                             decoration: BoxDecoration(
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                  color: const Color(0xFFE5E7EB)),
+                              border:
+                              Border.all(color: const Color(0xFFE5E7EB)),
                             ),
                             child: Column(
                               children: [
                                 _DetailRow(
                                   icon: Icons.business_outlined,
                                   label: 'Startup',
-                                  value:
-                                  widget.opportunity.startupName,
+                                  value: widget.opportunity.startupName,
                                 ),
-                                const Divider(height: 1,
-                                    indent: 56),
+                                const Divider(height: 1, indent: 56),
                                 _DetailRow(
                                   icon: Icons.work_outline,
                                   label: 'Role Type',
                                   value: widget.opportunity.roleType,
                                 ),
-                                const Divider(height: 1,
-                                    indent: 56),
+                                const Divider(height: 1, indent: 56),
                                 _DetailRow(
                                   icon: Icons.circle,
                                   label: 'Status',
-                                  value: widget.opportunity.status
-                                      .name ==
-                                      'open'
+                                  value: widget.opportunity.status.name == 'open'
                                       ? 'Open for applications'
                                       : 'Closed',
                                   valueColor:
-                                  widget.opportunity.status.name ==
-                                      'open'
+                                  widget.opportunity.status.name == 'open'
                                       ? AppColors.success
                                       : AppColors.error,
                                 ),
@@ -263,25 +208,21 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
 
                           // Apply section
                           if (isStudent) ...[
-                            // GUARD (edit 3): driven by the stream-derived
-                            // value, not just this session's local flag.
                             if (alreadyApplied)
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: AppColors.success
-                                      .withValues(alpha: 0.1),
-                                  borderRadius:
-                                  BorderRadius.circular(16),
+                                  color:
+                                  AppColors.success.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
                                     color: AppColors.success
                                         .withValues(alpha: 0.3),
                                   ),
                                 ),
                                 child: const Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.check_circle,
                                         color: AppColors.success),
@@ -298,23 +239,15 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                                 ),
                               )
                             else
-                              state.isSubmitting
-                                  ? const Center(
-                                  child:
-                                  CircularProgressIndicator())
-                                  : SizedBox(
+                              SizedBox(
                                 width: double.infinity,
                                 height: 54,
                                 child: ElevatedButton(
-                                  onPressed: () =>
-                                      _onApply(context, authUser),
+                                  onPressed: () => _onApply(context),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                    AppColors.primary,
+                                    backgroundColor: AppColors.primary,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(
-                                          16),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
                                   child: const Text(
@@ -336,16 +269,14 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
                               decoration: BoxDecoration(
                                 color: AppColors.background,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                    color: const Color(0xFFE5E7EB)),
+                                border:
+                                Border.all(color: const Color(0xFFE5E7EB)),
                               ),
                               child: const Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.info_outline,
-                                      color: AppColors.textHint,
-                                      size: 18),
+                                      color: AppColors.textHint, size: 18),
                                   SizedBox(width: 8),
                                   Text(
                                     'Only students can apply.',
@@ -372,22 +303,12 @@ class _OpportunityDetailPageState extends State<OpportunityDetailPage> {
     );
   }
 
-  void _onApply(BuildContext context, AppUser authUser) {
-    setState(() => _applied = true);
-
-    final application = Application(
-      id: '',
-      opportunityId: widget.opportunity.id,
-      opportunityTitle: widget.opportunity.title,
-      startupName: widget.opportunity.startupName,
-      studentId: authUser.uid,
-      status: ApplicationStatus.pending,
-      submittedAt: DateTime.now(),
+  void _onApply(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ApplyPage(opportunity: widget.opportunity),
+      ),
     );
-
-    context
-        .read<ApplicationBloc>()
-        .add(ApplicationSubmitted(application));
   }
 }
 

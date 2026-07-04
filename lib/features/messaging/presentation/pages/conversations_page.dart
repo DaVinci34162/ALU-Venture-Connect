@@ -116,8 +116,9 @@ class _ConversationList extends StatelessWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
             final app = state.applications[index];
-            final otherPartyName =
-            otherPartyIsStartup ? app.startupName : 'Applicant';
+            final otherPartyName = otherPartyIsStartup
+                ? app.startupName
+                : (app.applicantName.isNotEmpty ? app.applicantName : 'Applicant');
             return _ConversationTile(
               application: app,
               otherPartyName: otherPartyName,
