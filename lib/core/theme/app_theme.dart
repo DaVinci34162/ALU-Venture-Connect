@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Primary palette
-  static const Color primary = Color(0xFF2563EB);
-  static const Color primaryLight = Color(0xFF3B82F6);
-  static const Color primaryDark = Color(0xFF1D4ED8);
+  // Primary palette - ALU Venture Connect
+  static const Color primary = Color(0xFF065F46);
+  static const Color primaryLight = Color(0xFF10B981);
+  static const Color primaryDark = Color(0xFF064E3B);
 
   // Accent
-  static const Color secondary = Color(0xFFFF6584);
-  static const Color secondaryLight = Color(0xFFFF8FA3);
+  static const Color secondary = Color(0xFFF59E0B);
+  static const Color secondaryLight = Color(0xFFFBBF24);
 
   // Backgrounds
-  static const Color background = Color(0xFFF0F4FF);
+  static const Color background = Color(0xFFF7FAF8);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color cardBackground = Color(0xFFFFFFFF);
 
@@ -29,17 +29,19 @@ class AppColors {
 
   // Gradient stops
   static const List<Color> primaryGradient = [
-    Color(0xFF2563EB),
-    Color(0xFF7C3AED),
+    Color(0xFF065F46),
+    Color(0xFF10B981),
   ];
+
   static const List<Color> cardGradient = [
-    Color(0xFF2563EB),
-    Color(0xFFFF6584),
+    Color(0xFF065F46),
+    Color(0xFFF59E0B),
   ];
+
   static const List<Color> heroGradient = [
-    Color(0xFF1D4ED8),
-    Color(0xFF7C3AED),
-    Color(0xFFFF6584),
+    Color(0xFF064E3B),
+    Color(0xFF065F46),
+    Color(0xFFF59E0B),
   ];
 }
 

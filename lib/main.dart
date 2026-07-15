@@ -12,22 +12,25 @@ import 'features/main/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   await initDependencies();
-  runApp(const AluStartupHubApp());
+
+  runApp(const AluVentureConnectApp());
 }
 
-class AluStartupHubApp extends StatelessWidget {
-  const AluStartupHubApp({super.key});
+class AluVentureConnectApp extends StatelessWidget {
+  const AluVentureConnectApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => sl<AuthBloc>()..add(const AuthStateWatchStarted()),
       child: MaterialApp(
-        title: 'ALU Startup Hub',
+        title: 'ALU Venture Connect',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         home: const AuthGate(),
@@ -51,22 +54,32 @@ class AuthGate extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const CircularProgressIndicator(),
+
                   const SizedBox(height: 24),
-                  const Text('Connecting...'),
+
+                  const Text(
+                    'Launching ALU Venture Connect...',
+                  ),
+
                   if (state.error != null)
                     Padding(
                       padding: const EdgeInsets.all(24),
                       child: Text(
                         'Error: ${state.error}',
-                        style: const TextStyle(color: Colors.red),
+                        style: const TextStyle(
+                          color: Colors.red,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
+
                   TextButton(
                     onPressed: () => context
                         .read<AuthBloc>()
                         .add(const SignOutRequested()),
-                    child: const Text('Sign Out / Reset'),
+                    child: const Text(
+                      'Sign Out / Reset',
+                    ),
                   ),
                 ],
               ),
@@ -77,6 +90,7 @@ class AuthGate extends StatelessWidget {
         if (state.isAuthenticated) {
           return const MainPage();
         }
+
         return const LoginPage();
       },
     );

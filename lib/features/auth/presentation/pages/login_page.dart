@@ -36,7 +36,8 @@ class _LoginPageState extends State<LoginPage> {
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -60,10 +61,12 @@ class _LoginPageState extends State<LoginPage> {
                 backgroundColor: AppColors.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             );
           }
+
           if (state.isAuthenticated) {
             Navigator.of(context).popUntil((route) => route.isFirst);
           }
@@ -73,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // ── Gradient header ──
                   Container(
                     width: double.infinity,
                     height: 280,
@@ -91,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Logo mark
                         Container(
                           width: 72,
                           height: 72,
@@ -99,27 +100,32 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.4),
-                                width: 2),
+                              color: Colors.white.withValues(alpha: 0.4),
+                              width: 2,
+                            ),
                           ),
                           child: const Icon(
-                            Icons.hub_outlined,
+                            Icons.account_tree_outlined,
                             color: Colors.white,
                             size: 36,
                           ),
                         ),
+
                         const SizedBox(height: 16),
+
                         const Text(
-                          'ALU Startup Hub',
+                          'ALU Venture Connect',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
+
                         const SizedBox(height: 6),
+
                         Text(
-                          'Connect. Build. Grow.',
+                          'Discover . Create . Connect.',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.85),
                             fontSize: 14,
@@ -129,13 +135,13 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  // ── Form ──
                   Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 8),
+
                         const Text(
                           'Welcome back',
                           style: TextStyle(
@@ -144,7 +150,9 @@ class _LoginPageState extends State<LoginPage> {
                             color: AppColors.textPrimary,
                           ),
                         ),
+
                         const SizedBox(height: 4),
+
                         const Text(
                           'Sign in to your account',
                           style: TextStyle(
@@ -152,9 +160,9 @@ class _LoginPageState extends State<LoginPage> {
                             color: AppColors.textSecondary,
                           ),
                         ),
+
                         const SizedBox(height: 28),
 
-                        // Email
                         const Text(
                           'Email',
                           style: TextStyle(
@@ -163,36 +171,31 @@ class _LoginPageState extends State<LoginPage> {
                             color: AppColors.textPrimary,
                           ),
                         ),
+
                         const SizedBox(height: 8),
+
                         TextField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText: 'you@alustudent.com',
-                            prefixIcon: const Icon(Icons.email_outlined,
-                                color: AppColors.textHint),
+                            prefixIcon: const Icon(
+                              Icons.email_outlined,
+                              color: AppColors.textHint,
+                            ),
                             filled: true,
                             fillColor: AppColors.surface,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
-                                  color: Color(0xFFE5E7EB)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: Color(0xFFE5E7EB)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: AppColors.primary, width: 2),
+                                color: Color(0xFFE5E7EB),
+                              ),
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 16),
 
-                        // Password
                         const Text(
                           'Password',
                           style: TextStyle(
@@ -201,14 +204,18 @@ class _LoginPageState extends State<LoginPage> {
                             color: AppColors.textPrimary,
                           ),
                         ),
+
                         const SizedBox(height: 8),
+
                         TextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
                             hintText: '••••••••',
-                            prefixIcon: const Icon(Icons.lock_outline,
-                                color: AppColors.textHint),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: AppColors.textHint,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword
@@ -216,33 +223,26 @@ class _LoginPageState extends State<LoginPage> {
                                     : Icons.visibility_off_outlined,
                                 color: AppColors.textHint,
                               ),
-                              onPressed: () => setState(
-                                      () => _obscurePassword = !_obscurePassword),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
                             ),
                             filled: true,
                             fillColor: AppColors.surface,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: Color(0xFFE5E7EB)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: Color(0xFFE5E7EB)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: AppColors.primary, width: 2),
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 28),
 
-                        // Login button
                         if (state.isSubmitting)
-                          const Center(child: CircularProgressIndicator())
+                          const Center(
+                            child: CircularProgressIndicator(),
+                          )
                         else
                           SizedBox(
                             width: double.infinity,
@@ -265,14 +265,15 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
+
                         const SizedBox(height: 20),
 
-                        // Sign up link
                         Center(
                           child: GestureDetector(
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (_) => const SignupPage()),
+                                builder: (_) => const SignupPage(),
+                              ),
                             ),
                             child: RichText(
                               text: const TextSpan(
@@ -294,6 +295,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 24),
                       ],
                     ),

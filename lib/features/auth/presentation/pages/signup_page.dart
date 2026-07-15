@@ -98,14 +98,14 @@ class _SignupPageState extends State<SignupPage> {
                                       width: 2),
                                 ),
                                 child: const Icon(
-                                  Icons.hub_outlined,
+                                  Icons.account_tree_outlined,
                                   color: Colors.white,
                                   size: 28,
                                 ),
                               ),
                               const SizedBox(height: 12),
                               const Text(
-                                'Join ALU Startup Hub',
+                                'Join ALU Venture Connect',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
