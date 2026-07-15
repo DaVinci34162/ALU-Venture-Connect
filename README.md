@@ -1,139 +1,176 @@
-# ALU Startup Hub
+# ALU Venture Connect
 
-A Flutter and Firebase mobile application that connects African Leadership University (ALU) students seeking internship experience with student-led startups and early-stage ventures on campus.
+A Flutter and Firebase mobile application that connects African Leadership University (ALU) students seeking internship experience with student-led startups and early-stage ventures across the ALU ecosystem.
 
-Students discover and apply to opportunities posted by verified startups, and both sides communicate through a built-in real-time messaging system. The app is built with **Clean Architecture** and the **BLoC** state-management pattern on a **Cloud Firestore** backend.
-
----
-
-## Features
-
-- **Authentication & onboarding** — email/password sign-up and login with a role (student or startup admin) chosen at registration.
-- **Startup profiles & verification** — startups create profiles; only verified startups can post opportunities. Verification is an administrative action (set in the Firebase console), so no client can self-verify.
-- **Opportunity posting** — verified startups post roles with a title, description, role type, and tags.
-- **Opportunity discovery & search** — a home feed plus an explore screen with category filters and search.
-- **Application submission with a form** — students apply through a dedicated form (role/skills, cover message, portfolio link), with input validation. Applicant name is taken from the account and cannot be faked.
-- **Duplicate-application guard** — a student who has already applied sees a confirmation state instead of the apply button; this state is derived from the live Firestore stream, so it survives app restarts.
-- **Two-sided real-time messaging** — students and startups message each other in the context of an application; messages appear in real time with no manual refresh, and the conversation list shows live last-message previews.
-- **Role-aware UI** — the same screens present different content and actions for students versus startup admins.
+ALU Venture Connect enables students to discover internship opportunities, apply directly through the platform, and communicate with startup founders in real time. The application is built using **Flutter**, **Firebase**, **Clean Architecture**, and **BLoC** state management to ensure scalability, maintainability, and a modern user experience.
 
 ---
 
-## Tech Stack
+# Features
+
+- **Authentication & Onboarding** – Secure email/password registration and login using Firebase Authentication, with user roles (Student or Startup Admin).
+- **Startup Profiles & Verification** – Student-led startups create organization profiles. Only verified startups can publish internship opportunities.
+- **Opportunity Posting** – Startup administrators can create internship opportunities including title, description, role type, required skills, and tags.
+- **Opportunity Discovery & Search** – Students can browse opportunities, search by keywords, and filter by categories.
+- **Application Submission** – Students submit internship applications with their skills, portfolio link, and cover message.
+- **Duplicate Application Protection** – Students cannot apply multiple times to the same opportunity.
+- **Real-Time Messaging** – Applicants and startup administrators communicate through Firebase-powered live chat.
+- **Role-Based Experience** – Different interfaces and permissions are provided for students and startup administrators.
+
+---
+
+# Technology Stack
 
 | Area | Technology |
-|---|---|
+|------|------------|
 | Framework | Flutter (Dart) |
-| Backend | Firebase Authentication, Cloud Firestore |
-| State management | BLoC (`flutter_bloc`) |
-| Dependency injection | GetIt |
-| Value equality | Equatable |
-| Architecture | Clean Architecture (domain / data / presentation), feature-first |
+| Backend | Firebase Authentication & Cloud Firestore |
+| State Management | BLoC (`flutter_bloc`) |
+| Dependency Injection | GetIt |
+| Value Equality | Equatable |
+| Architecture | Clean Architecture (Feature-first) |
 
 ---
 
-## Architecture
+# Project Architecture
 
-The project uses Clean Architecture, organised feature-first. Each feature (`auth`, `startup_profile`, `opportunities`, `applications`, `messaging`) is split into three layers:
+The application follows **Clean Architecture** with a feature-first folder structure.
 
 ```
 lib/
 ├── core/
-│   ├── di/                 # GetIt dependency injection setup
-│   └── theme/              # app-wide theme / design tokens
+│   ├── di/
+│   └── theme/
+│
 └── features/
-    └── <feature>/
-        ├── domain/         # entities, repository interfaces, use cases
-        ├── data/           # datasources, models, repository implementations
-        └── presentation/   # BLoC (event/state), pages/widgets
+    ├── auth/
+    ├── startup_profile/
+    ├── opportunities/
+    ├── applications/
+    └── messaging/
+        ├── domain/
+        ├── data/
+        └── presentation/
 ```
 
-Dependencies point inward toward the domain layer, which has no knowledge of Flutter or Firebase. The data layer is the only layer that depends on Firestore. See the technical report for full architecture and schema diagrams.
+Each feature is separated into:
+
+- **Domain Layer** – Business logic, entities, repositories, and use cases.
+- **Data Layer** – Firebase models, repositories, and data sources.
+- **Presentation Layer** – UI, Pages, Widgets, and BLoC state management.
+
+This separation improves scalability, maintainability, and testing.
 
 ---
 
-## Requirements
+# Requirements
 
-- **Flutter SDK** — `[VERIFY: run `flutter --version` and paste your version, e.g. 3.x.x]`
-- **Dart SDK** — bundled with Flutter `[VERIFY]`
-- A configured **Firebase project** (Authentication + Cloud Firestore enabled)
-- An Android emulator or physical device (the app is intended to run on a device/emulator, not a browser)
-- Android Studio or VS Code with the Flutter and Dart plugins
+- Flutter SDK
+- Dart SDK
+- Firebase Project
+- Firebase Authentication
+- Cloud Firestore
+- Android Studio or VS Code
+- Android Emulator or Physical Android Device
 
 ---
 
-## Getting Started
+# Getting Started
 
-### 1. Clone the repository
+## Clone the Repository
 
 ```bash
-git clone https://github.com/SamuelNkpado/alu-startup-hub.git
-cd alu-startup-hub
+git clone https://github.com/DaVinci34162/ALU-Venture-Connect.git
+cd ALU-Venture-Connect
 ```
 
-### 2. Install dependencies
+## Install Dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 3. Set up Firebase
+## Configure Firebase
 
-This repository does **not** include Firebase configuration files (`google-services.json`, `firebase_options.dart`) because they are project-specific credentials and are excluded via `.gitignore`. To run the app you must connect it to a Firebase project of your own:
+This repository does **not** include Firebase configuration files (`google-services.json` and `firebase_options.dart`) because they contain project-specific credentials.
 
-1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com).
-2. Enable **Authentication** (Email/Password provider) and **Cloud Firestore**.
-3. Configure the app with the FlutterFire CLI:
-   ```bash
-   dart pub global activate flutterfire_cli
-   flutterfire configure
-   ```
-   This generates `lib/firebase_options.dart` and the platform config files.
-4. Apply the Firestore **security rules** (see below) and create the required **composite index** (see below).
+To configure Firebase:
 
-### 4. Run the app
+1. Create a Firebase project.
+2. Enable **Email/Password Authentication**.
+3. Enable **Cloud Firestore**.
+4. Run:
+
+```bash
+dart pub global activate flutterfire_cli
+flutterfire configure
+```
+
+This will generate the required Firebase configuration files.
+
+---
+
+## Run the Application
 
 ```bash
 flutter run
 ```
 
-> **Note:** After changing dependency-injection registrations or Firebase configuration, use a full restart (`R`) rather than hot reload (`r`).
-
 ---
 
-## Firestore Security Rules
-
-The application relies on security rules that restrict access appropriately (a student reads their own applications, a startup owner reads applications submitted to their startup, and messages are readable only by the two parties to a conversation). The full rules are included in the technical report (Appendix A) and should be pasted into the Firebase console under **Firestore Database → Rules** before running.
-
-## Required Composite Index
-
-The startup-side conversations query requires a composite index on the `applications` collection:
-
-| Collection | Field 1 | Field 2 |
-|---|---|---|
-| `applications` | `startupOwnerUid` (Ascending) | `submittedAt` (Descending) |
-
-The first time this query runs, Firestore prints a console link that creates this index automatically; alternatively, add it manually under **Firestore Database → Indexes**.
-
----
-
-## Firestore Data Model
+# Firestore Database Structure
 
 | Collection | Description |
-|---|---|
-| `users` | One document per user (`uid`, `email`, `name`, `role`) |
-| `startups` | Startup profiles (`name`, `description`, `verified`, `createdBy`) |
-| `opportunities` | Roles posted by startups (`title`, `roleType`, `description`, `tags`, `status`, `startupId`, `startupName`) |
-| `applications` | Student applications (`opportunityId`, `studentId`, `startupOwnerUid`, applicant details, `status`, `submittedAt`) |
-| `applications/{id}/messages` | Chat messages, as a subcollection of each application |
-| `notifications` | Per-user notifications |
-
-
----
-
-## Project Status
-
-This project was built as an individual final project for a Flutter development course. It is a functional prototype; known limitations and planned improvements (automated tests, server-side timestamps, a dedicated applicant-details view, in-app startup verification) are documented in the technical report.
+|------------|-------------|
+| users | Stores registered users |
+| startups | Startup profiles and verification status |
+| opportunities | Internship opportunities created by startups |
+| applications | Internship applications submitted by students |
+| applications/{id}/messages | Real-time conversation between applicant and startup |
+| notifications | User notifications |
 
 ---
 
+# Main Features Demonstrated
+
+- Firebase Authentication
+- Cloud Firestore CRUD Operations
+- Real-Time Data Synchronization
+- Role-Based Access Control
+- Clean Architecture
+- BLoC State Management
+- Responsive Flutter UI
+- Firebase Backend Integration
+
+---
+
+# Future Improvements
+
+Future versions of ALU Venture Connect could include:
+
+- Push notifications
+- AI-powered internship recommendations
+- Interview scheduling
+- Student portfolio integration
+- Startup analytics dashboard
+- Bookmarking opportunities
+- CV upload support
+- Advanced search and filtering
+
+---
+
+# Project Information
+
+**Project Name:** ALU Venture Connect
+
+**Developer:** Murengezi Gisanura DaVinci
+
+**Course:** Flutter Mobile Application Development
+
+**Institution:** African Leadership University (ALU)
+
+---
+
+# License
+
+This project was developed for academic purposes as part of a Flutter Mobile Development course at the African Leadership University.
