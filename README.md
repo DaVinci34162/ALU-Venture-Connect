@@ -1,4 +1,4 @@
-# ALU Startup Hub
+# ALU Venture Connect
 
 A Flutter and Firebase mobile application that connects African Leadership University (ALU) students seeking internship experience with student-led startups and early-stage ventures on campus.
 
@@ -67,8 +67,8 @@ Dependencies point inward toward the domain layer, which has no knowledge of Flu
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/SamuelNkpado/alu-startup-hub.git
-cd alu-startup-hub
+git clone https://github.com/DaVinci34162/ALU-Venture-Connect.git
+cd ALU-Venture-Connect
 ```
 
 ### 2. Install dependencies

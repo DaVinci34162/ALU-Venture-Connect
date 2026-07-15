@@ -131,7 +131,7 @@ class ProfilePage extends StatelessWidget {
                       const Divider(height: 1),
                       _ActionRow(
                         icon: Icons.info_outline,
-                        label: 'About ALU Startup Hub',
+                        label: 'About ALU Venture Connect',
                         onTap: () {},
                       ),
                       const Divider(height: 1),
@@ -150,7 +150,7 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 24),
                   Center(
                     child: Text(
-                      'ALU Startup Hub v1.0.0',
+                      'ALU Venture Connect v1.0.0',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textHint,
